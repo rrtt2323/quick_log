@@ -1,18 +1,96 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.rrtt2323.quicklog</id>
-    <name>quick_log Template</name>
-    <vendor>rrtt2323</vendor>
+  <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+  <id>com.rrtt2323.quick_log</id>
 
-    <depends>com.intellij.modules.platform</depends>
+  <!-- Public plugin name should be written in Title Case.
+       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+  <name>QuickLog</name>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+  <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+  <vendor email="rrtt2323wy@gmail.com" url="">rrtt2323</vendor>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.rrtt2323.quicklog.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-    </extensions>
+  <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+       Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+  <description><![CDATA[
+  <h2>QuickLog</h2>
+  <p>A Intellij plugin to quickly insert or remove log code</p>
+  <h3>KeyMap:</h3>
+  <ul>
+      <p>
+      shortcut for insertion (⌥ + L) on Mac and (ALT + L) on others
+      </p>
+      <br>
+      <p>
+      shortcut for deletion (⌥ + ⇧ + L) on Mac and (ALT + ⇧ + L) on others
+      </p>
+  </ul>
+  <h3>ConfigurableUI: Settings -> Tools -> QuickLog</h3>
+  ]]></description>
+  <change-notes><![CDATA[
+  <br>
+  v1.0.0 - initial release.
+  <br>
+  ]]></change-notes>
 
-    <applicationListeners>
-        <listener class="com.github.rrtt2323.quicklog.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
+  <!-- Product and plugin compatibility requirements.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>JavaScript</depends>
+
+  <!-- Extension points defined by the plugin.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+  <extensions defaultExtensionNs="com.intellij">
+    <!--配置-->
+    <applicationConfigurable
+            id="com.rrtt2323.quick_log.settings.QuickLogSettingsConfigurable"
+            instance="com.rrtt2323.quick_log.settings.QuickLogSettingsConfigurable"
+            parentId="tools"
+            displayName="QuickLog"/>
+    <applicationService serviceImplementation="com.rrtt2323.quick_log.settings.QuickLogSettings"/>
+
+    <!--通知-->
+    <postStartupActivity implementation="com.rrtt2323.quick_log.notification.UpdateNotify"/>
+    <notificationGroup displayType="STICKY_BALLOON" id="com.rrtt2323.quick_log"/>
+    <applicationService serviceImplementation="com.rrtt2323.quick_log.notification.ApplicationServicePlaceholder"/>
+  </extensions>
+
+  <actions>
+    <!--一个测试用的主菜单下拉选项-->
+    <!--
+    <group id="com.rrtt2323.quick_log.GreetingMenu"
+           text="Greeting" description="Greeting menu">
+      <add-to-group group-id="MainMenu" anchor="last"/>
+      <action id="com.rrtt2323.quick_log.HelloAction"
+              class="com.rrtt2323.quick_log.HelloAction"
+              text="Hello" description="Says hello"/>
+    </group>
+    -->
+
+    <!--快速日志的功能-->
+    <group id="com.rrtt2323.quick_log.actions.QuickLogActionsGroup"
+           class="com.rrtt2323.quick_log.actions.QuickLogActionsGroup"
+           text="Quick Log" description="Generate logs"
+           popup="true">
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+      <!--插入日志-->
+      <action id="com.rrtt2323.quick_log.actions.QuickLogInsert"
+              class="com.rrtt2323.quick_log.actions.QuickLogInsert"
+              text="Insert QuickLog's Logs"
+              description="Generate a xxx.log() for that variable">
+        <keyboard-shortcut keymap="$default" first-keystroke="alt L"/>
+        <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta L"/>
+      </action>
+      <!--注释或移除日志-->
+      <action id="com.rrtt2323.quick_log.actions.QuickLogRemove"
+              class="com.rrtt2323.quick_log.actions.QuickLogRemove"
+              text="Remove QuickLog's Logs"
+              description="Remove xxx.log() generate by QuickLog plugin">
+        <keyboard-shortcut keymap="$default" first-keystroke="alt shift L"/>
+        <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L"/>
+      </action>
+    </group>
+  </actions>
+
 </idea-plugin>
